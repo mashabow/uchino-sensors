@@ -62,6 +62,8 @@ void reconnectMQTT()
 void setup()
 {
   Serial.begin(115200);
+  configTzTime("JST-9", "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
+
   setupWiFi();
   setupMQTT();
   dht.begin();
