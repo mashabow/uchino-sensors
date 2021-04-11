@@ -1,10 +1,11 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
+#include <WiFiClientSecure.h>
 #include <PubSubClient.h>
 #include "secrets.h"
 #include "DHT.h"
 
-WiFiClient wifiClient;
+WiFiClientSecure wifiClient;
 PubSubClient mqttClient(wifiClient);
 DHT dht(4, DHT11); // IO4 ピンからセンサーの値を得る
 
@@ -28,6 +29,12 @@ void setupWiFi()
 
 void setupMQTT()
 {
+  const BearSSL::X509List rootCA(ROOT_CA);
+  const BearSSL::X509List certificate(CERTIFICATE);
+  const BearSSL::PrivateKey privateKey(PRIVATE_KEY);
+  wifiClient.setTrustAnchors(&rootCA);
+  wifiClient.setClientRSACert(&certificate, &privateKey);
+
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
 }
 
@@ -37,7 +44,7 @@ void reconnectMQTT()
   {
     Serial.print("Attempting MQTT connection...");
 
-    if (mqttClient.connect("ESP8266Client"))
+    if (mqttClient.connect(THING_NAME))
     {
       Serial.println("connected");
     }
