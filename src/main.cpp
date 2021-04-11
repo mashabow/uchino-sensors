@@ -6,12 +6,14 @@
 
 DHT dht(DHTPIN, DHTTYPE);
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
   dht.begin();
 }
 
-void loop() {
+void loop()
+{
   float t = dht.readTemperature();
   float h = dht.readHumidity();
   Serial.println("Temperature: " + String(t, 1) + "°C\tHumidity: " + String(h, 0) + "%");
