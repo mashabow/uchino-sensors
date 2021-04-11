@@ -9,6 +9,10 @@ WiFiClientSecure wifiClient;
 PubSubClient mqttClient(wifiClient);
 DHT dht(4, DHT11); // IO4 ピンからセンサーの値を得る
 
+const BearSSL::X509List rootCA(ROOT_CA);
+const BearSSL::X509List certificate(CERTIFICATE);
+const BearSSL::PrivateKey privateKey(PRIVATE_KEY);
+
 void setupWiFi()
 {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -29,9 +33,6 @@ void setupWiFi()
 
 void setupMQTT()
 {
-  const BearSSL::X509List rootCA(ROOT_CA);
-  const BearSSL::X509List certificate(CERTIFICATE);
-  const BearSSL::PrivateKey privateKey(PRIVATE_KEY);
   wifiClient.setTrustAnchors(&rootCA);
   wifiClient.setClientRSACert(&certificate, &privateKey);
 
