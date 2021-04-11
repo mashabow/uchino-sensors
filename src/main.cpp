@@ -4,12 +4,9 @@
 #include "secrets.h"
 #include "DHT.h"
 
-#define DHTPIN 4      // IO4 ピンからセンサーの値を得る
-#define DHTTYPE DHT11 // DHT 11 を使う
-
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
-DHT dht(DHTPIN, DHTTYPE);
+DHT dht(4, DHT11); // IO4 ピンからセンサーの値を得る
 
 void setupWiFi()
 {
