@@ -72,8 +72,8 @@ void loop()
 {
   const unsigned long startTime = millis();
 
-  float temperature = dht.readTemperature();
-  float humidity = dht.readHumidity();
+  const float temperature = dht.readTemperature();
+  const float humidity = dht.readHumidity();
 
   Serial.println("Temperature: " + String(temperature, 1) + "°C\t" +
                  "Humidity: " + String(humidity, 0) + "%");
