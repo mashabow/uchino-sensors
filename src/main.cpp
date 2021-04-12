@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Arduino_JSON.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
@@ -71,13 +72,16 @@ void loop()
 {
   float temperature = dht.readTemperature();
   float humidity = dht.readHumidity();
+
   Serial.println("Temperature: " + String(temperature, 1) + "°C\t" +
                  "Humidity: " + String(humidity, 0) + "%");
 
-  String data = String(temperature, 1) + "," + String(humidity, 0);
+  JSONVar payload;
+  payload["temperature"] = round(temperature * 10) / 10.0;
+  payload["humidity"] = humidity;
 
   reconnectMQTT();
-  mqttClient.publish("sample_topic", data.c_str());
+  mqttClient.publish("sample_topic", JSON.stringify(payload).c_str());
 
   delay(2000);
 }
