@@ -70,6 +70,8 @@ void setup()
 
 void loop()
 {
+  const unsigned long startTime = millis();
+
   float temperature = dht.readTemperature();
   float humidity = dht.readHumidity();
 
@@ -83,5 +85,7 @@ void loop()
   reconnectMQTT();
   mqttClient.publish("sample_topic", JSON.stringify(payload).c_str());
 
-  delay(2000);
+  const unsigned long endTime = millis();
+  // 計測・送信にかかった時間を差し引いて wait
+  delay(10 * 1000 - (endTime - startTime));
 }
