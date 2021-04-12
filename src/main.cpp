@@ -83,7 +83,8 @@ void loop()
   payload["humidity"] = humidity;
 
   reconnectMQTT();
-  mqttClient.publish("sample_topic", JSON.stringify(payload).c_str());
+  String topic = String("data/") + THING_NAME;
+  mqttClient.publish(topic.c_str(), JSON.stringify(payload).c_str());
 
   const unsigned long endTime = millis();
   // 計測・送信にかかった時間を差し引いて wait
