@@ -1,6 +1,11 @@
 import React from 'react';
+import Amplify from 'aws-amplify';
+
+import awsExports from './aws-exports';
 import logo from './logo.svg';
 import './App.css';
+
+Amplify.configure(awsExports);
 
 function App() {
   return (
