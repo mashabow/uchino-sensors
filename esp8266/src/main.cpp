@@ -77,7 +77,7 @@ String measure()
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(74880);
   configTzTime("JST-9", "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
 
   setupWiFi();
