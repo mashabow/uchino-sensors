@@ -2,43 +2,46 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const createTodo = /* GraphQL */ `
-  mutation CreateTodo(
-    $input: CreateTodoInput!
-    $condition: ModelTodoConditionInput
+export const createMeasurement = /* GraphQL */ `
+  mutation CreateMeasurement(
+    $input: CreateMeasurementInput!
+    $condition: ModelMeasurementConditionInput
   ) {
-    createTodo(input: $input, condition: $condition) {
+    createMeasurement(input: $input, condition: $condition) {
       id
-      name
-      description
+      clientId
+      temperature
+      humidity
       createdAt
       updatedAt
     }
   }
 `;
-export const updateTodo = /* GraphQL */ `
-  mutation UpdateTodo(
-    $input: UpdateTodoInput!
-    $condition: ModelTodoConditionInput
+export const updateMeasurement = /* GraphQL */ `
+  mutation UpdateMeasurement(
+    $input: UpdateMeasurementInput!
+    $condition: ModelMeasurementConditionInput
   ) {
-    updateTodo(input: $input, condition: $condition) {
+    updateMeasurement(input: $input, condition: $condition) {
       id
-      name
-      description
+      clientId
+      temperature
+      humidity
       createdAt
       updatedAt
     }
   }
 `;
-export const deleteTodo = /* GraphQL */ `
-  mutation DeleteTodo(
-    $input: DeleteTodoInput!
-    $condition: ModelTodoConditionInput
+export const deleteMeasurement = /* GraphQL */ `
+  mutation DeleteMeasurement(
+    $input: DeleteMeasurementInput!
+    $condition: ModelMeasurementConditionInput
   ) {
-    deleteTodo(input: $input, condition: $condition) {
+    deleteMeasurement(input: $input, condition: $condition) {
       id
-      name
-      description
+      clientId
+      temperature
+      humidity
       createdAt
       updatedAt
     }

@@ -1,5 +1,6 @@
-type Todo @model {
+type Measurement @model {
   id: ID!
-  name: String!
-  description: String
+  clientId: String!
+  temperature: Float!
+  humidity: Float!
 }

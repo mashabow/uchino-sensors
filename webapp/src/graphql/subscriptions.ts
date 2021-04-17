@@ -2,34 +2,37 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const onCreateTodo = /* GraphQL */ `
-  subscription OnCreateTodo {
-    onCreateTodo {
+export const onCreateMeasurement = /* GraphQL */ `
+  subscription OnCreateMeasurement {
+    onCreateMeasurement {
       id
-      name
-      description
+      clientId
+      temperature
+      humidity
       createdAt
       updatedAt
     }
   }
 `;
-export const onUpdateTodo = /* GraphQL */ `
-  subscription OnUpdateTodo {
-    onUpdateTodo {
+export const onUpdateMeasurement = /* GraphQL */ `
+  subscription OnUpdateMeasurement {
+    onUpdateMeasurement {
       id
-      name
-      description
+      clientId
+      temperature
+      humidity
       createdAt
       updatedAt
     }
   }
 `;
-export const onDeleteTodo = /* GraphQL */ `
-  subscription OnDeleteTodo {
-    onDeleteTodo {
+export const onDeleteMeasurement = /* GraphQL */ `
+  subscription OnDeleteMeasurement {
+    onDeleteMeasurement {
       id
-      name
-      description
+      clientId
+      temperature
+      humidity
       createdAt
       updatedAt
     }
