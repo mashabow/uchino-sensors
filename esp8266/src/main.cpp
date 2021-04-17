@@ -58,6 +58,23 @@ void reconnectMQTT()
   }
 }
 
+String measure()
+{
+  dht.begin();
+
+  const float temperature = dht.readTemperature();
+  const float humidity = dht.readHumidity();
+
+  Serial.println("Temperature: " + String(temperature, 1) + "°C\t" +
+                 "Humidity: " + String(humidity, 0) + "%");
+
+  JSONVar data;
+  data["temperature"] = round(temperature * 10) / 10.0;
+  data["humidity"] = humidity;
+
+  return JSON.stringify(data);
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -65,26 +82,16 @@ void setup()
 
   setupWiFi();
   setupMQTT();
-  dht.begin();
-}
-
-void loop()
-{
-  const float temperature = dht.readTemperature();
-  const float humidity = dht.readHumidity();
-
-  Serial.println("Temperature: " + String(temperature, 1) + "°C\t" +
-                 "Humidity: " + String(humidity, 0) + "%");
-
-  JSONVar payload;
-  payload["temperature"] = round(temperature * 10) / 10.0;
-  payload["humidity"] = humidity;
-
   reconnectMQTT();
-  String topic = String("data/") + THING_NAME;
-  mqttClient.publish(topic.c_str(), JSON.stringify(payload).c_str());
 
+  String topic = String("data/") + THING_NAME;
+  String payload = measure();
+  mqttClient.publish(topic.c_str(), payload.c_str());
+
+  // deep sleep して終了。wake 時には setup から始まる
   const int intervalMinute = 10;
   ESP.deepSleep(intervalMinute * 60 * 1000 * 1000, WAKE_RF_DEFAULT);
   delay(1000); // deep sleep が始まるまで待つ
 }
+
+void loop() {}
