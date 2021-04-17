@@ -1,4 +1,4 @@
-type Measurement @model {
+type Measurement @model(mutations: null) {
   id: ID!
   clientId: String!
   temperature: Float!
