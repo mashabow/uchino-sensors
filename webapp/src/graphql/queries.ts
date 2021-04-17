@@ -3,9 +3,10 @@
 // this is an auto generated file. This will be overwritten
 
 export const getMeasurement = /* GraphQL */ `
-  query GetMeasurement($id: ID!) {
-    getMeasurement(id: $id) {
+  query GetMeasurement($type: String!, $timestamp: AWSTimestamp!) {
+    getMeasurement(type: $type, timestamp: $timestamp) {
       id
+      type
       clientId
       timestamp
       temperature
@@ -15,13 +16,24 @@ export const getMeasurement = /* GraphQL */ `
 `;
 export const listMeasurements = /* GraphQL */ `
   query ListMeasurements(
+    $type: String
+    $timestamp: ModelIntKeyConditionInput
     $filter: ModelMeasurementFilterInput
     $limit: Int
     $nextToken: String
+    $sortDirection: ModelSortDirection
   ) {
-    listMeasurements(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    listMeasurements(
+      type: $type
+      timestamp: $timestamp
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      sortDirection: $sortDirection
+    ) {
       items {
         id
+        type
         clientId
         timestamp
         temperature

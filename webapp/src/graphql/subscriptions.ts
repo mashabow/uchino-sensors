@@ -6,6 +6,7 @@ export const onCreateMeasurement = /* GraphQL */ `
   subscription OnCreateMeasurement {
     onCreateMeasurement {
       id
+      type
       clientId
       timestamp
       temperature

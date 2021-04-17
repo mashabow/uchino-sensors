@@ -5,14 +5,25 @@
 export type Measurement = {
   __typename: "Measurement",
   id?: string,
+  type?: string,
   clientId?: string,
   timestamp?: number,
   temperature?: number,
   humidity?: number,
 };
 
+export type ModelIntKeyConditionInput = {
+  eq?: number | null,
+  le?: number | null,
+  lt?: number | null,
+  ge?: number | null,
+  gt?: number | null,
+  between?: Array< number | null > | null,
+};
+
 export type ModelMeasurementFilterInput = {
   id?: ModelIDInput | null,
+  type?: ModelStringInput | null,
   clientId?: ModelStringInput | null,
   timestamp?: ModelIntInput | null,
   temperature?: ModelFloatInput | null,
@@ -102,6 +113,12 @@ export type ModelFloatInput = {
   attributeType?: ModelAttributeTypes | null,
 };
 
+export enum ModelSortDirection {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
+
 export type ModelMeasurementConnection = {
   __typename: "ModelMeasurementConnection",
   items?:  Array<Measurement | null > | null,
@@ -109,13 +126,15 @@ export type ModelMeasurementConnection = {
 };
 
 export type GetMeasurementQueryVariables = {
-  id?: string,
+  type?: string,
+  timestamp?: number,
 };
 
 export type GetMeasurementQuery = {
   getMeasurement?:  {
     __typename: "Measurement",
     id: string,
+    type: string,
     clientId: string,
     timestamp: number,
     temperature: number,
@@ -124,9 +143,12 @@ export type GetMeasurementQuery = {
 };
 
 export type ListMeasurementsQueryVariables = {
+  type?: string | null,
+  timestamp?: ModelIntKeyConditionInput | null,
   filter?: ModelMeasurementFilterInput | null,
   limit?: number | null,
   nextToken?: string | null,
+  sortDirection?: ModelSortDirection | null,
 };
 
 export type ListMeasurementsQuery = {
@@ -135,6 +157,7 @@ export type ListMeasurementsQuery = {
     items?:  Array< {
       __typename: "Measurement",
       id: string,
+      type: string,
       clientId: string,
       timestamp: number,
       temperature: number,
@@ -148,6 +171,7 @@ export type OnCreateMeasurementSubscription = {
   onCreateMeasurement?:  {
     __typename: "Measurement",
     id: string,
+    type: string,
     clientId: string,
     timestamp: number,
     temperature: number,
