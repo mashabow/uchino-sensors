@@ -1,4 +1,8 @@
-type Measurement @model(mutations: null) {
+type Measurement
+  @model(
+    mutations: null
+    subscriptions: { onCreate: ["onCreateMeasurement"] }
+  ) {
   id: ID!
   clientId: String!
   temperature: Float!

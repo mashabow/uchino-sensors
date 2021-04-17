@@ -14,27 +14,3 @@ export const onCreateMeasurement = /* GraphQL */ `
     }
   }
 `;
-export const onUpdateMeasurement = /* GraphQL */ `
-  subscription OnUpdateMeasurement {
-    onUpdateMeasurement {
-      id
-      clientId
-      temperature
-      humidity
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onDeleteMeasurement = /* GraphQL */ `
-  subscription OnDeleteMeasurement {
-    onDeleteMeasurement {
-      id
-      clientId
-      temperature
-      humidity
-      createdAt
-      updatedAt
-    }
-  }
-`;
