@@ -18,14 +18,11 @@ void setupWiFi()
 {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
-  Serial.print("Connecting WiFi");
+  Serial.println("Connecting WiFi...");
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
-    Serial.print(".");
   }
-  Serial.println();
-
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
 }
@@ -36,26 +33,15 @@ void setupMQTT()
   wifiClient.setClientRSACert(&certificate, &privateKey);
 
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
-}
 
-void reconnectMQTT()
-{
-  while (!mqttClient.connected())
+  Serial.println("Connecting MQTT...");
+  while (!mqttClient.connect(THING_NAME))
   {
-    Serial.print("Attempting MQTT connection... ");
-
-    if (mqttClient.connect(THING_NAME))
-    {
-      Serial.println("connected");
-    }
-    else
-    {
-      Serial.print("failed, state=");
-      Serial.print(mqttClient.state());
-      Serial.println(" try again in 5 seconds");
-      delay(5000);
-    }
+    Serial.println("Failed, state=" + String(mqttClient.state()));
+    Serial.println("Try again in 5 seconds");
+    delay(5000);
   }
+  Serial.println("Connected.");
 }
 
 String measure()
@@ -82,7 +68,6 @@ void setup()
 
   setupWiFi();
   setupMQTT();
-  reconnectMQTT();
 
   String topic = String("data/") + THING_NAME;
   String payload = measure();
