@@ -1,0 +1,14 @@
+type Measurement
+  @model(
+    mutations: null
+    subscriptions: { onCreate: ["onCreateMeasurement"] }
+    timestamps: null # `createdAt`, `updatedAt` の自動生成をやめる
+  )
+  @key(fields: ["type", "timestamp"]) {
+  id: ID!
+  type: String! # timestamp でソートするために必要なフィールド。固定の値 `"Measurement"` を入れておく
+  clientId: String!
+  timestamp: AWSTimestamp!
+  temperature: Float!
+  humidity: Float!
+}
