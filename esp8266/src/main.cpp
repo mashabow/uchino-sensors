@@ -70,8 +70,6 @@ void setup()
 
 void loop()
 {
-  const unsigned long startTime = millis();
-
   const float temperature = dht.readTemperature();
   const float humidity = dht.readHumidity();
 
@@ -86,7 +84,7 @@ void loop()
   String topic = String("data/") + THING_NAME;
   mqttClient.publish(topic.c_str(), JSON.stringify(payload).c_str());
 
-  const unsigned long endTime = millis();
-  // 計測・送信にかかった時間を差し引いて wait
-  delay(10 * 1000 - (endTime - startTime));
+  const int intervalMinute = 10;
+  ESP.deepSleep(intervalMinute * 60 * 1000 * 1000, WAKE_RF_DEFAULT);
+  delay(1000); // deep sleep が始まるまで待つ
 }
