@@ -7,10 +7,9 @@ export const onCreateMeasurement = /* GraphQL */ `
     onCreateMeasurement {
       id
       clientId
+      timestamp
       temperature
       humidity
-      createdAt
-      updatedAt
     }
   }
 `;

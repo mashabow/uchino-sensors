@@ -7,10 +7,9 @@ export const getMeasurement = /* GraphQL */ `
     getMeasurement(id: $id) {
       id
       clientId
+      timestamp
       temperature
       humidity
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -24,10 +23,9 @@ export const listMeasurements = /* GraphQL */ `
       items {
         id
         clientId
+        timestamp
         temperature
         humidity
-        createdAt
-        updatedAt
       }
       nextToken
     }

@@ -6,15 +6,15 @@ export type Measurement = {
   __typename: "Measurement",
   id?: string,
   clientId?: string,
+  timestamp?: number,
   temperature?: number,
   humidity?: number,
-  createdAt?: string,
-  updatedAt?: string,
 };
 
 export type ModelMeasurementFilterInput = {
   id?: ModelIDInput | null,
   clientId?: ModelStringInput | null,
+  timestamp?: ModelIntInput | null,
   temperature?: ModelFloatInput | null,
   humidity?: ModelFloatInput | null,
   and?: Array< ModelMeasurementFilterInput | null > | null,
@@ -78,6 +78,18 @@ export type ModelStringInput = {
   size?: ModelSizeInput | null,
 };
 
+export type ModelIntInput = {
+  ne?: number | null,
+  eq?: number | null,
+  le?: number | null,
+  lt?: number | null,
+  ge?: number | null,
+  gt?: number | null,
+  between?: Array< number | null > | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+};
+
 export type ModelFloatInput = {
   ne?: number | null,
   eq?: number | null,
@@ -105,10 +117,9 @@ export type GetMeasurementQuery = {
     __typename: "Measurement",
     id: string,
     clientId: string,
+    timestamp: number,
     temperature: number,
     humidity: number,
-    createdAt: string,
-    updatedAt: string,
   } | null,
 };
 
@@ -125,10 +136,9 @@ export type ListMeasurementsQuery = {
       __typename: "Measurement",
       id: string,
       clientId: string,
+      timestamp: number,
       temperature: number,
       humidity: number,
-      createdAt: string,
-      updatedAt: string,
     } | null > | null,
     nextToken?: string | null,
   } | null,
@@ -139,9 +149,8 @@ export type OnCreateMeasurementSubscription = {
     __typename: "Measurement",
     id: string,
     clientId: string,
+    timestamp: number,
     temperature: number,
     humidity: number,
-    createdAt: string,
-    updatedAt: string,
   } | null,
 };

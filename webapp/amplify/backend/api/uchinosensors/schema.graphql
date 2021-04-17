@@ -2,9 +2,11 @@ type Measurement
   @model(
     mutations: null
     subscriptions: { onCreate: ["onCreateMeasurement"] }
+    timestamps: null # `createdAt`, `updatedAt` の自動生成をやめる
   ) {
   id: ID!
   clientId: String!
+  timestamp: AWSTimestamp!
   temperature: Float!
   humidity: Float!
 }
