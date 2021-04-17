@@ -14,13 +14,24 @@ const BearSSL::X509List rootCA(ROOT_CA);
 const BearSSL::X509List certificate(CERTIFICATE);
 const BearSSL::PrivateKey privateKey(PRIVATE_KEY);
 
+/* deep sleep して終了。wake 時には setup から始まる */
+void deepSleep()
+{
+  const int intervalMinutes = 10;
+  ESP.deepSleep(intervalMinutes * 60 * 1000 * 1000, WAKE_RF_DEFAULT);
+  delay(1000); // deep sleep が始まるまで待つ
+}
+
 void setupWiFi()
 {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
   Serial.println("Connecting WiFi...");
+  int retryCount = 0;
   while (WiFi.status() != WL_CONNECTED)
   {
+    if (retryCount++ > 40)
+      deepSleep();
     delay(500);
   }
   Serial.print("Connected, IP address: ");
@@ -35,9 +46,12 @@ void setupMQTT()
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
 
   Serial.println("Connecting MQTT...");
+  int retryCount = 0;
   while (!mqttClient.connect(THING_NAME))
   {
     Serial.println("Failed, state=" + String(mqttClient.state()));
+    if (retryCount++ > 3)
+      deepSleep();
     Serial.println("Try again in 5 seconds");
     delay(5000);
   }
@@ -73,10 +87,7 @@ void setup()
   String payload = measure();
   mqttClient.publish(topic.c_str(), payload.c_str());
 
-  // deep sleep して終了。wake 時には setup から始まる
-  const int intervalMinute = 10;
-  ESP.deepSleep(intervalMinute * 60 * 1000 * 1000, WAKE_RF_DEFAULT);
-  delay(1000); // deep sleep が始まるまで待つ
+  deepSleep();
 }
 
 void loop() {}
