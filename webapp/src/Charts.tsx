@@ -20,12 +20,23 @@ const commonOptions: ApexOptions = {
       text: '日時',
     },
     labels: {
+      datetimeFormatter: {
+        year: 'yyyy年',
+        month: 'yyyy年M月',
+        day: 'M月d日',
+      },
       datetimeUTC: false, // ローカルのタイムゾーンで表示する
     },
   },
   yaxis: {
     labels: {
-      minWidth: 50,
+      minWidth: 40,
+    },
+    decimalsInFloat: 0,
+  },
+  tooltip: {
+    x: {
+      format: 'yyyy年M月d日(ddd) HH:mm',
     },
   },
 };
@@ -53,7 +64,13 @@ const Charts: React.FC<Props> = ({ measurements }) => {
           yaxis: {
             ...commonOptions.yaxis,
             title: {
-              text: '温度 [℃]',
+              text: '温度 [°C]',
+            },
+          },
+          tooltip: {
+            ...commonOptions.tooltip,
+            y: {
+              formatter: (value) => `${value.toFixed(1)} °C`,
             },
           },
         }}
@@ -74,8 +91,17 @@ const Charts: React.FC<Props> = ({ measurements }) => {
           },
           yaxis: {
             ...commonOptions.yaxis,
+            min: 50,
+            max: 80,
+            tickAmount: 6,
             title: {
               text: '湿度 [%]',
+            },
+          },
+          tooltip: {
+            ...commonOptions.tooltip,
+            y: {
+              formatter: (value) => `${value} %`,
             },
           },
         }}
