@@ -52,6 +52,17 @@ const clientIdToRoom = {
   'esp8266-yellow': '納戸',
 };
 
+const getSeries = (
+  measurements: readonly Measurement[],
+  field: 'temperature' | 'humidity'
+) =>
+  Object.entries(clientIdToRoom).map(([clientId, room]) => ({
+    name: room,
+    data: measurements
+      .filter((m) => m.clientId === clientId)
+      .map((m) => [m.timestamp, m[field]]),
+  }));
+
 interface Props {
   readonly measurements: readonly Measurement[];
 }
@@ -79,12 +90,7 @@ const Charts: React.FC<Props> = ({ measurements }) => {
             },
           },
         }}
-        series={Object.entries(clientIdToRoom).map(([clientId, room]) => ({
-          name: room,
-          data: measurements
-            .filter((m) => m.clientId === clientId)
-            .map((m) => [m.timestamp, m.temperature]),
-        }))}
+        series={getSeries(measurements, 'temperature')}
         height={chartHeight}
       />
       <Chart
@@ -110,12 +116,7 @@ const Charts: React.FC<Props> = ({ measurements }) => {
             },
           },
         }}
-        series={Object.entries(clientIdToRoom).map(([clientId, room]) => ({
-          name: room,
-          data: measurements
-            .filter((m) => m.clientId === clientId)
-            .map((m) => [m.timestamp, m.humidity]),
-        }))}
+        series={getSeries(measurements, 'humidity')}
         height={chartHeight}
       />
     </>
