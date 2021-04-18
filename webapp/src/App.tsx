@@ -29,6 +29,7 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
+      <h1>uchino-sensors</h1>
       <Charts measurements={measurements} />
     </div>
   );
