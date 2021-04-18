@@ -3,6 +3,16 @@
 }
 
 .Title {
+  display: inline-block;
   font-weight: 100;
   font-size: 36px;
+}
+
+.GitHubLink {
+  margin-left: 8px;
+  opacity: 0.4;
+}
+
+.GitHubLink:hover {
+  opacity: 1;
 }
