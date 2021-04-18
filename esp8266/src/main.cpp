@@ -14,18 +14,26 @@ const BearSSL::X509List rootCA(ROOT_CA);
 const BearSSL::X509List certificate(CERTIFICATE);
 const BearSSL::PrivateKey privateKey(PRIVATE_KEY);
 
+/* deep sleep して終了。wake 時には setup から始まる */
+void deepSleep()
+{
+  const int intervalMinutes = 10;
+  ESP.deepSleep(intervalMinutes * 60 * 1000 * 1000, WAKE_RF_DEFAULT);
+  delay(1000); // deep sleep が始まるまで待つ
+}
+
 void setupWiFi()
 {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
-  Serial.print("Connecting WiFi");
+  Serial.println("Connecting WiFi...");
+  int retryCount = 0;
   while (WiFi.status() != WL_CONNECTED)
   {
+    if (retryCount++ > 40)
+      deepSleep();
     delay(500);
-    Serial.print(".");
   }
-  Serial.println();
-
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
 }
@@ -36,41 +44,23 @@ void setupMQTT()
   wifiClient.setClientRSACert(&certificate, &privateKey);
 
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
-}
 
-void reconnectMQTT()
-{
-  while (!mqttClient.connected())
+  Serial.println("Connecting MQTT...");
+  int retryCount = 0;
+  while (!mqttClient.connect(THING_NAME))
   {
-    Serial.print("Attempting MQTT connection... ");
-
-    if (mqttClient.connect(THING_NAME))
-    {
-      Serial.println("connected");
-    }
-    else
-    {
-      Serial.print("failed, state=");
-      Serial.print(mqttClient.state());
-      Serial.println(" try again in 5 seconds");
-      delay(5000);
-    }
+    Serial.println("Failed, state=" + String(mqttClient.state()));
+    if (retryCount++ > 3)
+      deepSleep();
+    Serial.println("Try again in 5 seconds");
+    delay(5000);
   }
+  Serial.println("Connected.");
 }
 
-void setup()
+String measure()
 {
-  Serial.begin(115200);
-  configTzTime("JST-9", "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
-
-  setupWiFi();
-  setupMQTT();
   dht.begin();
-}
-
-void loop()
-{
-  const unsigned long startTime = millis();
 
   const float temperature = dht.readTemperature();
   const float humidity = dht.readHumidity();
@@ -78,15 +68,26 @@ void loop()
   Serial.println("Temperature: " + String(temperature, 1) + "°C\t" +
                  "Humidity: " + String(humidity, 0) + "%");
 
-  JSONVar payload;
-  payload["temperature"] = round(temperature * 10) / 10.0;
-  payload["humidity"] = humidity;
+  JSONVar data;
+  data["temperature"] = round(temperature * 10) / 10.0;
+  data["humidity"] = humidity;
 
-  reconnectMQTT();
-  String topic = String("data/") + THING_NAME;
-  mqttClient.publish(topic.c_str(), JSON.stringify(payload).c_str());
-
-  const unsigned long endTime = millis();
-  // 計測・送信にかかった時間を差し引いて wait
-  delay(10 * 1000 - (endTime - startTime));
+  return JSON.stringify(data);
 }
+
+void setup()
+{
+  Serial.begin(74880);
+  configTzTime("JST-9", "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
+
+  setupWiFi();
+  setupMQTT();
+
+  String topic = String("data/") + THING_NAME;
+  String payload = measure();
+  mqttClient.publish(topic.c_str(), payload.c_str());
+
+  deepSleep();
+}
+
+void loop() {}
