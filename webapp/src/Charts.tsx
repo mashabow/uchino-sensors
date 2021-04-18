@@ -30,6 +30,12 @@ const commonOptions: ApexOptions = {
   },
 };
 
+const clientIdToRoom = {
+  'esp8266-white': 'ダイニング',
+  'esp8266-blue': '洋室',
+  'esp8266-yellow': '納戸',
+};
+
 interface Props {
   readonly measurements: readonly Measurement[];
 }
@@ -51,12 +57,12 @@ const Charts: React.FC<Props> = ({ measurements }) => {
             },
           },
         }}
-        series={[
-          {
-            name: 'temperature',
-            data: measurements.map((m) => [m.timestamp, m.temperature]),
-          },
-        ]}
+        series={Object.entries(clientIdToRoom).map(([clientId, room]) => ({
+          name: room,
+          data: measurements
+            .filter((m) => m.clientId === clientId)
+            .map((m) => [m.timestamp, m.temperature]),
+        }))}
         height={chartHeight}
       />
       <Chart
@@ -73,12 +79,12 @@ const Charts: React.FC<Props> = ({ measurements }) => {
             },
           },
         }}
-        series={[
-          {
-            name: 'humidity',
-            data: measurements.map((m) => [m.timestamp, m.humidity]),
-          },
-        ]}
+        series={Object.entries(clientIdToRoom).map(([clientId, room]) => ({
+          name: room,
+          data: measurements
+            .filter((m) => m.clientId === clientId)
+            .map((m) => [m.timestamp, m.humidity]),
+        }))}
         height={chartHeight}
       />
     </>

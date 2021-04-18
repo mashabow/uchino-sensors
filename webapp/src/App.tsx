@@ -16,7 +16,7 @@ const App: React.FC = () => {
   useEffect(() => {
     (async () => {
       const { data } = (await API.graphql(
-        graphqlOperation(queries.listMeasurements)
+        graphqlOperation(queries.listMeasurements, { limit: 500 })
       )) as GraphQLResult<ListMeasurementsQuery>;
 
       setMeasurements(
