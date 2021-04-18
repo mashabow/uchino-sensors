@@ -39,6 +39,11 @@ const commonOptions: ApexOptions = {
       format: 'yyyy年M月d日(ddd) HH:mm',
     },
   },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'left',
+    offsetX: 15,
+  },
 };
 
 const clientIdToRoom = {
