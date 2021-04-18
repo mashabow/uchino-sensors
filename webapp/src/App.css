@@ -1,3 +1,8 @@
 .App {
   text-align: center;
 }
+
+.Title {
+  font-weight: 100;
+  font-size: 36px;
+}

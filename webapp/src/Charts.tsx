@@ -2,9 +2,11 @@ import React from 'react';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import jaLocale from 'apexcharts/dist/locales/ja.json';
-import { Measurement } from './api';
 
-const chartHeight = 400;
+import { Measurement } from './api';
+import './Chart.css';
+
+const chartHeight = 380;
 
 const commonOptions: ApexOptions = {
   chart: {
@@ -18,6 +20,7 @@ const commonOptions: ApexOptions = {
     type: 'datetime',
     title: {
       text: '日時',
+      offsetY: 3,
     },
     labels: {
       datetimeFormatter: {
@@ -30,7 +33,7 @@ const commonOptions: ApexOptions = {
   },
   yaxis: {
     labels: {
-      minWidth: 40,
+      minWidth: 30,
     },
     decimalsInFloat: 0,
   },
@@ -40,9 +43,15 @@ const commonOptions: ApexOptions = {
     },
   },
   legend: {
+    // 右のツールバーと上下位置を揃える
     position: 'top',
     horizontalAlign: 'left',
-    offsetX: 15,
+    offsetX: 13,
+    offsetY: -1,
+    markers: {
+      width: 10,
+      height: 10,
+    },
   },
 };
 
@@ -71,6 +80,7 @@ const Charts: React.FC<Props> = ({ measurements }) => {
   return (
     <>
       <Chart
+        className="Chart"
         options={{
           ...commonOptions,
           chart: {
@@ -94,6 +104,7 @@ const Charts: React.FC<Props> = ({ measurements }) => {
         height={chartHeight}
       />
       <Chart
+        className="Chart"
         options={{
           ...commonOptions,
           chart: {
