@@ -6,7 +6,7 @@ import jaLocale from 'apexcharts/dist/locales/ja.json';
 import { Measurement } from './api';
 import './Chart.css';
 
-const chartHeight = 380;
+const chartHeight = '40%';
 
 const commonOptions: ApexOptions = {
   chart: {
