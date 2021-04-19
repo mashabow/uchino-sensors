@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import Amplify, { API, graphqlOperation } from 'aws-amplify';
 import { GraphQLResult } from '@aws-amplify/api-graphql';
+import { sub } from 'date-fns';
 
 import awsExports from './aws-exports';
 import * as queries from './graphql/queries';
-import { ListMeasurementsQuery, Measurement } from './api';
+import {
+  ListMeasurementsQuery,
+  ListMeasurementsQueryVariables,
+  Measurement,
+} from './api';
 import './App.css';
 import Charts from './Charts';
 import GitHubMark from './github-mark.svg';
@@ -16,8 +21,15 @@ const App: React.FC = () => {
 
   useEffect(() => {
     (async () => {
+      const now = new Date();
       const { data } = (await API.graphql(
-        graphqlOperation(queries.listMeasurements, { limit: 500 })
+        graphqlOperation(queries.listMeasurements, {
+          type: 'Measurement',
+          timestamp: {
+            between: [sub(now, { days: 1, hours: 1 }).getTime(), now.getTime()],
+          },
+          limit: 500,
+        } as ListMeasurementsQueryVariables)
       )) as GraphQLResult<ListMeasurementsQuery>;
 
       setMeasurements(
