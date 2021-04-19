@@ -8,7 +8,7 @@ type Measurement
   id: ID!
   type: String! # timestamp でソートするために必要なフィールド。固定の値 `"Measurement"` を入れておく
   clientId: String!
-  timestamp: AWSTimestamp!
+  timestamp: Float! # Int（2^31 - 1）の上限を超えてしまうので、とりあえず Float として定義する
   temperature: Float!
   humidity: Float!
 }

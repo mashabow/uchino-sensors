@@ -12,7 +12,7 @@ export type Measurement = {
   humidity?: number,
 };
 
-export type ModelIntKeyConditionInput = {
+export type ModelFloatKeyConditionInput = {
   eq?: number | null,
   le?: number | null,
   lt?: number | null,
@@ -25,7 +25,7 @@ export type ModelMeasurementFilterInput = {
   id?: ModelIDInput | null,
   type?: ModelStringInput | null,
   clientId?: ModelStringInput | null,
-  timestamp?: ModelIntInput | null,
+  timestamp?: ModelFloatInput | null,
   temperature?: ModelFloatInput | null,
   humidity?: ModelFloatInput | null,
   and?: Array< ModelMeasurementFilterInput | null > | null,
@@ -89,18 +89,6 @@ export type ModelStringInput = {
   size?: ModelSizeInput | null,
 };
 
-export type ModelIntInput = {
-  ne?: number | null,
-  eq?: number | null,
-  le?: number | null,
-  lt?: number | null,
-  ge?: number | null,
-  gt?: number | null,
-  between?: Array< number | null > | null,
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
-};
-
 export type ModelFloatInput = {
   ne?: number | null,
   eq?: number | null,
@@ -144,7 +132,7 @@ export type GetMeasurementQuery = {
 
 export type ListMeasurementsQueryVariables = {
   type?: string | null,
-  timestamp?: ModelIntKeyConditionInput | null,
+  timestamp?: ModelFloatKeyConditionInput | null,
   filter?: ModelMeasurementFilterInput | null,
   limit?: number | null,
   nextToken?: string | null,

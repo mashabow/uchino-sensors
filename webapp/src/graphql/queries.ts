@@ -3,7 +3,7 @@
 // this is an auto generated file. This will be overwritten
 
 export const getMeasurement = /* GraphQL */ `
-  query GetMeasurement($type: String!, $timestamp: AWSTimestamp!) {
+  query GetMeasurement($type: String!, $timestamp: Float!) {
     getMeasurement(type: $type, timestamp: $timestamp) {
       id
       type
@@ -17,7 +17,7 @@ export const getMeasurement = /* GraphQL */ `
 export const listMeasurements = /* GraphQL */ `
   query ListMeasurements(
     $type: String
-    $timestamp: ModelIntKeyConditionInput
+    $timestamp: ModelFloatKeyConditionInput
     $filter: ModelMeasurementFilterInput
     $limit: Int
     $nextToken: String
