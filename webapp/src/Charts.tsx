@@ -10,7 +10,6 @@ const chartHeight = 380;
 
 const commonOptions: ApexOptions = {
   chart: {
-    id: 'temperature-chart',
     group: 'chart-group',
     height: chartHeight,
     locales: [jaLocale],
