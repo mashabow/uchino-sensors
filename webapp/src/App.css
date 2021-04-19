@@ -9,6 +9,12 @@
   font-size: 36px;
 }
 
+@media (max-width: 600px) {
+  .Title {
+    font-size: 30px;
+  }
+}
+
 .GitHubLink {
   margin-left: 8px;
   opacity: 0.4;

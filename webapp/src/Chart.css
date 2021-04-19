@@ -2,3 +2,14 @@
   /* 視覚上中央に見えるように、右のアキを大きくする */
   margin: 0 40px 20px 35px;
 }
+
+@media (max-width: 600px) {
+  .Chart {
+    margin: 0 8px 25px 5px;
+  }
+}
+
+.apexcharts-toolbar .apexcharts-element-hidden {
+  /* スマホ表示で legend と上下位置がずれるので、非表示にしてしまう */
+  display: none;
+}
