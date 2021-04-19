@@ -16,6 +16,10 @@ const commonOptions: ApexOptions = {
     locales: [jaLocale],
     defaultLocale: 'ja',
   },
+  stroke: {
+    curve: 'smooth',
+    width: 3,
+  },
   xaxis: {
     type: 'datetime',
     title: {
