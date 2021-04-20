@@ -1,8 +1,7 @@
 import { GraphQLResult } from '@aws-amplify/api-graphql';
 import { AWSIoTProvider, PubSub } from '@aws-amplify/pubsub';
 import Amplify, { API, graphqlOperation } from 'aws-amplify';
-import { sub } from 'date-fns';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import awsExports from './aws-exports';
 import * as queries from './graphql/queries';
@@ -28,30 +27,32 @@ Amplify.addPluggable(
   })
 );
 
-export const useMeasurements = (): readonly Measurement[] => {
+export const useMeasurements = (): {
+  measurements: readonly Measurement[];
+  requestMeasurements: (from: number, to: number) => Promise<void>;
+} => {
   const [measurements, setMeasurements] = useState<readonly Measurement[]>([]);
 
-  useEffect(() => {
-    (async () => {
-      const now = new Date();
-      const { data } = (await API.graphql(
-        graphqlOperation(queries.listMeasurements, {
-          type: 'Measurement',
-          timestamp: {
-            between: [sub(now, { days: 1, hours: 1 }).getTime(), now.getTime()],
-          },
-          limit: 500,
-        } as ListMeasurementsQueryVariables)
-      )) as GraphQLResult<ListMeasurementsQuery>;
+  // timestamp の範囲を指定して取得
+  const requestMeasurements = useCallback(async (from: number, to: number) => {
+    const { data } = (await API.graphql(
+      graphqlOperation(queries.listMeasurements, {
+        type: 'Measurement',
+        timestamp: {
+          between: [from, to],
+        },
+        limit: 500,
+      } as ListMeasurementsQueryVariables)
+    )) as GraphQLResult<ListMeasurementsQuery>;
 
-      setMeasurements(
-        (data?.listMeasurements?.items?.filter(
-          Boolean
-        ) as readonly Measurement[]) ?? []
-      );
-    })();
+    setMeasurements(
+      (data?.listMeasurements?.items?.filter(
+        Boolean
+      ) as readonly Measurement[]) ?? []
+    );
   }, []);
 
+  // リアルタイム更新
   useEffect(() => {
     const subscription = PubSub.subscribe(
       'republished/with-uchino-sensors-fields'
@@ -63,5 +64,5 @@ export const useMeasurements = (): readonly Measurement[] => {
     return () => subscription.unsubscribe();
   }, []);
 
-  return measurements;
+  return { measurements, requestMeasurements };
 };

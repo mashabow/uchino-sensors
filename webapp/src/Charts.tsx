@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Chart from 'react-apexcharts';
 import ApexCharts, { ApexOptions } from 'apexcharts';
 import jaLocale from 'apexcharts/dist/locales/ja.json';
@@ -104,7 +104,15 @@ const getSeries = (
   }));
 
 const Charts: React.FC = () => {
-  const measurements = useMeasurements();
+  const { measurements, requestMeasurements } = useMeasurements();
+
+  useEffect(() => {
+    const now = new Date();
+    requestMeasurements(
+      sub(now, { days: 1, hours: 1 }).getTime(),
+      now.getTime()
+    );
+  }, [requestMeasurements]);
 
   return (
     <>
