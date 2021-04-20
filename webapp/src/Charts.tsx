@@ -8,6 +8,8 @@ import { Measurement } from './api';
 import './Charts.css';
 import { useMeasurements } from './useMeasurements';
 
+const initialXRange = { days: 1, hours: 1 };
+
 const chartHeight = '40%';
 
 const chartIds = ['temperature-chart', 'humidity-chart'] as const;
@@ -58,6 +60,17 @@ const getCommonOptions = (
           },
         };
       },
+      // 最初のズーム範囲に戻す
+      beforeResetZoom: () => {
+        const now = new Date();
+        return {
+          xaxis: {
+            min: sub(now, initialXRange).getTime(),
+            max: now.getTime(),
+          },
+        };
+      },
+      // 読み込んでいない範囲があれば読み込む
       zoomed: (_, { xaxis }) => {
         if (xaxis.min === undefined || xaxis.max === undefined) return; // ズームリセットのとき
         requestMeasurements(xaxis.min, xaxis.max);
@@ -126,15 +139,16 @@ const Charts: React.FC = () => {
 
   useEffect(() => {
     const now = new Date();
-    requestMeasurements(
-      sub(now, { days: 1, hours: 1 }).getTime(),
-      now.getTime()
-    );
+    requestMeasurements(sub(now, initialXRange).getTime(), now.getTime());
   }, [requestMeasurements]);
 
   const commonOptions = useMemo(() => getCommonOptions(requestMeasurements), [
     requestMeasurements,
   ]);
+
+  // FIXME: subscription によって新しいデータが追加されると、
+  // 全データが表示される範囲に x 軸のズームがリセットされてしまう
+  // https://github.com/apexcharts/react-apexcharts/issues/148
 
   return (
     <>
