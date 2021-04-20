@@ -1,7 +1,7 @@
 import { GraphQLResult } from '@aws-amplify/api-graphql';
 import { AWSIoTProvider, PubSub } from '@aws-amplify/pubsub';
 import Amplify, { API, graphqlOperation } from 'aws-amplify';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 import awsExports from './aws-exports';
 import * as queries from './graphql/queries';
@@ -32,24 +32,29 @@ export const useMeasurements = (): {
   requestMeasurements: (from: number, to: number) => Promise<void>;
 } => {
   const [measurements, setMeasurements] = useState<readonly Measurement[]>([]);
+  const timestampMin = useRef(Date.now());
 
   // timestamp の範囲を指定して取得
   const requestMeasurements = useCallback(async (from: number, to: number) => {
+    if (from >= timestampMin.current) return;
+
     const { data } = (await API.graphql(
       graphqlOperation(queries.listMeasurements, {
         type: 'Measurement',
-        timestamp: {
-          between: [from, to],
-        },
+        timestamp: { between: [from, timestampMin.current] },
         limit: 500,
       } as ListMeasurementsQueryVariables)
     )) as GraphQLResult<ListMeasurementsQuery>;
 
-    setMeasurements(
-      (data?.listMeasurements?.items?.filter(
-        Boolean
-      ) as readonly Measurement[]) ?? []
+    setMeasurements((ms) =>
+      [
+        ...ms,
+        ...((data?.listMeasurements?.items?.filter(
+          Boolean
+        ) as readonly Measurement[]) ?? []),
+      ].sort((a, b) => (a.timestamp ?? 0) - (b.timestamp ?? 0))
     );
+    timestampMin.current = from;
   }, []);
 
   // リアルタイム更新

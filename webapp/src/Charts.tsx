@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Chart from 'react-apexcharts';
 import ApexCharts, { ApexOptions } from 'apexcharts';
 import jaLocale from 'apexcharts/dist/locales/ja.json';
@@ -18,7 +18,9 @@ const clientIdToRoom = {
   'esp8266-yellow': '納戸',
 };
 
-const commonOptions: ApexOptions = {
+const getCommonOptions = (
+  requestMeasurements: (from: number, to: number) => Promise<void>
+): ApexOptions => ({
   chart: {
     group: 'chart-group',
     height: chartHeight,
@@ -46,6 +48,13 @@ const commonOptions: ApexOptions = {
             max: Math.min(xaxis.max, now.getTime()),
           },
         };
+      },
+      zoomed: (_, { xaxis }) => {
+        if (xaxis.min === undefined || xaxis.max === undefined) return; // ズームリセットのとき
+        requestMeasurements(xaxis.min, xaxis.max);
+      },
+      scrolled: (_, { xaxis }) => {
+        requestMeasurements(xaxis.min, xaxis.max);
       },
     },
   },
@@ -90,7 +99,7 @@ const commonOptions: ApexOptions = {
       height: 10,
     },
   },
-};
+});
 
 const getSeries = (
   measurements: readonly Measurement[],
@@ -113,6 +122,10 @@ const Charts: React.FC = () => {
       now.getTime()
     );
   }, [requestMeasurements]);
+
+  const commonOptions = useMemo(() => getCommonOptions(requestMeasurements), [
+    requestMeasurements,
+  ]);
 
   return (
     <>
