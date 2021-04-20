@@ -15,7 +15,10 @@ import {
 Amplify.configure({
   ...awsExports,
   // PubSub で必要になる Cognito の ID プールを指定
-  Auth: { identityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID },
+  Auth: {
+    region: awsExports.aws_project_region,
+    identityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID,
+  },
 });
 
 Amplify.addPluggable(
