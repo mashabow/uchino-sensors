@@ -1,44 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import Amplify, { API, graphqlOperation } from 'aws-amplify';
-import { GraphQLResult } from '@aws-amplify/api-graphql';
-import { sub } from 'date-fns';
+import React from 'react';
 
-import awsExports from './aws-exports';
-import * as queries from './graphql/queries';
-import {
-  ListMeasurementsQuery,
-  ListMeasurementsQueryVariables,
-  Measurement,
-} from './api';
 import './App.css';
 import Charts from './Charts';
 import GitHubMark from './github-mark.svg';
-
-Amplify.configure(awsExports);
+import { useMeasurements } from './useMeasurements';
 
 const App: React.FC = () => {
-  const [measurements, setMeasurements] = useState<readonly Measurement[]>([]);
-
-  useEffect(() => {
-    (async () => {
-      const now = new Date();
-      const { data } = (await API.graphql(
-        graphqlOperation(queries.listMeasurements, {
-          type: 'Measurement',
-          timestamp: {
-            between: [sub(now, { days: 1, hours: 1 }).getTime(), now.getTime()],
-          },
-          limit: 500,
-        } as ListMeasurementsQueryVariables)
-      )) as GraphQLResult<ListMeasurementsQuery>;
-
-      setMeasurements(
-        (data?.listMeasurements?.items?.filter(
-          Boolean
-        ) as readonly Measurement[]) ?? []
-      );
-    })();
-  }, []);
+  const measurements = useMeasurements();
 
   return (
     <div className="App">

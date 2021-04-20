@@ -1,7 +1,7 @@
 type Measurement
   @model(
     mutations: null
-    subscriptions: { onCreate: ["onCreateMeasurement"] }
+    subscriptions: null
     timestamps: null # `createdAt`, `updatedAt` の自動生成をやめる
   )
   @key(fields: ["type", "timestamp"]) {
