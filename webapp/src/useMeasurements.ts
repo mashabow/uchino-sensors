@@ -53,7 +53,8 @@ export const useMeasurements = (): readonly Measurement[] => {
     const subscription = PubSub.subscribe(
       'republished/with-uchino-sensors-fields'
     ).subscribe({
-      next: (data) => console.log('Message received', data),
+      next: ({ value: measurement }: { readonly value: Measurement }) =>
+        setMeasurements((measurements) => [...measurements, measurement]),
       error: (error) => console.warn(error),
     });
     return () => subscription.unsubscribe();
