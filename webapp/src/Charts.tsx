@@ -1,6 +1,6 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
-import { ApexOptions } from 'apexcharts';
+import ApexCharts, { ApexOptions } from 'apexcharts';
 import jaLocale from 'apexcharts/dist/locales/ja.json';
 
 import { Measurement } from './api';
@@ -8,12 +8,34 @@ import './Charts.css';
 
 const chartHeight = '40%';
 
+const chartIds = ['temperature-chart', 'humidity-chart'] as const;
+
+const clientIdToRoom = {
+  'esp8266-white': 'ダイニング',
+  'esp8266-blue': '洋室',
+  'esp8266-yellow': '納戸',
+};
+
 const commonOptions: ApexOptions = {
   chart: {
     group: 'chart-group',
     height: chartHeight,
     locales: [jaLocale],
     defaultLocale: 'ja',
+    events: {
+      // legend クリックによる series の表示・非表示を、2 つの chart 間で連動させる
+      legendClick: (chartContext, seriesIndex) => {
+        if (seriesIndex === undefined) return;
+
+        const clickedChartId: typeof chartIds[number] =
+          chartContext.opts.chart.id;
+        ApexCharts.exec(
+          chartIds[1 - chartIds.indexOf(clickedChartId)],
+          'toggleSeries',
+          Object.values(clientIdToRoom)[seriesIndex]
+        );
+      },
+    },
   },
   stroke: {
     curve: 'smooth',
@@ -58,12 +80,6 @@ const commonOptions: ApexOptions = {
   },
 };
 
-const clientIdToRoom = {
-  'esp8266-white': 'ダイニング',
-  'esp8266-blue': '洋室',
-  'esp8266-yellow': '納戸',
-};
-
 const getSeries = (
   measurements: readonly Measurement[],
   field: 'temperature' | 'humidity'
@@ -88,7 +104,7 @@ const Charts: React.FC<Props> = ({ measurements }) => {
           ...commonOptions,
           chart: {
             ...commonOptions.chart,
-            id: 'temperature-chart',
+            id: chartIds[0],
           },
           yaxis: {
             ...commonOptions.yaxis,
@@ -112,7 +128,7 @@ const Charts: React.FC<Props> = ({ measurements }) => {
           ...commonOptions,
           chart: {
             ...commonOptions.chart,
-            id: 'humidity-chart',
+            id: chartIds[1],
           },
           yaxis: {
             ...commonOptions.yaxis,
