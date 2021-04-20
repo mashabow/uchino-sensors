@@ -13,6 +13,8 @@ applications:
             - yarn install
         build:
           commands:
+            - echo "REACT_APP_IDENTITY_POOL_ID=$REACT_APP_IDENTITY_POOL_ID" >> .env
+            - echo "REACT_APP_PUBSUB_ENDPOINT=$REACT_APP_PUBSUB_ENDPOINT" >> .env
             - yarn run build
       artifacts:
         baseDirectory: build

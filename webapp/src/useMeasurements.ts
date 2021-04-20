@@ -1,14 +1,29 @@
 import { GraphQLResult } from '@aws-amplify/api-graphql';
-import { API, graphqlOperation } from 'aws-amplify';
+import { AWSIoTProvider, PubSub } from '@aws-amplify/pubsub';
+import Amplify, { API, graphqlOperation } from 'aws-amplify';
 import { sub } from 'date-fns';
 import { useState, useEffect } from 'react';
 
+import awsExports from './aws-exports';
 import * as queries from './graphql/queries';
 import {
   Measurement,
   ListMeasurementsQueryVariables,
   ListMeasurementsQuery,
 } from './api';
+
+Amplify.configure({
+  ...awsExports,
+  // PubSub で必要になる Cognito の ID プールを指定
+  Auth: { identityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID },
+});
+
+Amplify.addPluggable(
+  new AWSIoTProvider({
+    aws_pubsub_region: awsExports.aws_project_region,
+    aws_pubsub_endpoint: process.env.REACT_APP_PUBSUB_ENDPOINT,
+  })
+);
 
 export const useMeasurements = (): readonly Measurement[] => {
   const [measurements, setMeasurements] = useState<readonly Measurement[]>([]);
@@ -32,6 +47,16 @@ export const useMeasurements = (): readonly Measurement[] => {
         ) as readonly Measurement[]) ?? []
       );
     })();
+  }, []);
+
+  useEffect(() => {
+    const subscription = PubSub.subscribe(
+      'republished/with-uchino-sensors-fields'
+    ).subscribe({
+      next: (data) => console.log('Message received', data),
+      error: (error) => console.warn(error),
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   return measurements;

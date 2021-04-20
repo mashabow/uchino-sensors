@@ -1,13 +1,9 @@
 import React from 'react';
-import Amplify from 'aws-amplify';
 
-import awsExports from './aws-exports';
 import './App.css';
 import Charts from './Charts';
 import GitHubMark from './github-mark.svg';
 import { useMeasurements } from './useMeasurements';
-
-Amplify.configure(awsExports);
 
 const App: React.FC = () => {
   const measurements = useMeasurements();
