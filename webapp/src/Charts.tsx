@@ -2,6 +2,7 @@ import React from 'react';
 import Chart from 'react-apexcharts';
 import ApexCharts, { ApexOptions } from 'apexcharts';
 import jaLocale from 'apexcharts/dist/locales/ja.json';
+import { sub } from 'date-fns';
 
 import { Measurement } from './api';
 import './Charts.css';
@@ -34,6 +35,16 @@ const commonOptions: ApexOptions = {
           'toggleSeries',
           Object.values(clientIdToRoom)[seriesIndex]
         );
+      },
+      // ズームアウトするときの範囲を制限する
+      beforeZoom: (_, { xaxis }) => {
+        const now = new Date();
+        return {
+          xaxis: {
+            min: Math.max(xaxis.min, sub(now, { days: 3 }).getTime()),
+            max: Math.min(xaxis.max, now.getTime()),
+          },
+        };
       },
     },
   },
