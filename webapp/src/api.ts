@@ -154,15 +154,3 @@ export type ListMeasurementsQuery = {
     nextToken?: string | null,
   } | null,
 };
-
-export type OnCreateMeasurementSubscription = {
-  onCreateMeasurement?:  {
-    __typename: "Measurement",
-    id: string,
-    type: string,
-    clientId: string,
-    timestamp: number,
-    temperature: number,
-    humidity: number,
-  } | null,
-};
