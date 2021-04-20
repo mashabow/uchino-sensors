@@ -26,6 +26,15 @@ const getCommonOptions = (
     height: chartHeight,
     locales: [jaLocale],
     defaultLocale: 'ja',
+    animations: {
+      easing: 'easeinout',
+      animateGradually: {
+        enabled: false,
+      },
+      dynamicAnimation: {
+        speed: 100,
+      },
+    },
     events: {
       // legend クリックによる series の表示・非表示を、2 つの chart 間で連動させる
       legendClick: (chartContext, seriesIndex) => {
