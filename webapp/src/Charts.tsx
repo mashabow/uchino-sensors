@@ -132,9 +132,6 @@ const Charts: React.FC<Props> = ({ measurements }) => {
           },
           yaxis: {
             ...commonOptions.yaxis,
-            min: 50,
-            max: 80,
-            tickAmount: 6,
             title: {
               text: '湿度 [%]',
             },
