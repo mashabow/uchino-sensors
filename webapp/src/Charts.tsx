@@ -6,6 +6,7 @@ import { sub } from 'date-fns';
 
 import { Measurement } from './api';
 import './Charts.css';
+import { useMeasurements } from './useMeasurements';
 
 const chartHeight = '40%';
 
@@ -102,11 +103,9 @@ const getSeries = (
       .map((m) => [m.timestamp, m[field]]),
   }));
 
-interface Props {
-  readonly measurements: readonly Measurement[];
-}
+const Charts: React.FC = () => {
+  const measurements = useMeasurements();
 
-const Charts: React.FC<Props> = ({ measurements }) => {
   return (
     <>
       <Chart

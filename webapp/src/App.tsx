@@ -3,11 +3,8 @@ import React from 'react';
 import './App.css';
 import Charts from './Charts';
 import GitHubMark from './github-mark.svg';
-import { useMeasurements } from './useMeasurements';
 
 const App: React.FC = () => {
-  const measurements = useMeasurements();
-
   return (
     <div className="App">
       <header>
@@ -26,7 +23,7 @@ const App: React.FC = () => {
           />
         </a>
       </header>
-      <Charts measurements={measurements} />
+      <Charts />
     </div>
   );
 };
