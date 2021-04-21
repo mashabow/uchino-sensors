@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Chart from 'react-apexcharts';
 import ApexCharts, { ApexOptions } from 'apexcharts';
 import jaLocale from 'apexcharts/dist/locales/ja.json';
@@ -7,6 +7,8 @@ import { sub } from 'date-fns';
 import { Measurement } from './api';
 import './Charts.css';
 import { useMeasurements } from './useMeasurements';
+
+const initialXRange = { days: 1, hours: 1 };
 
 const chartHeight = '40%';
 
@@ -18,12 +20,23 @@ const clientIdToRoom = {
   'esp8266-yellow': '納戸',
 };
 
-const commonOptions: ApexOptions = {
+const getCommonOptions = (
+  requestMeasurements: (from: number, to: number) => Promise<void>
+): ApexOptions => ({
   chart: {
     group: 'chart-group',
     height: chartHeight,
     locales: [jaLocale],
     defaultLocale: 'ja',
+    animations: {
+      easing: 'easeinout',
+      animateGradually: {
+        enabled: false,
+      },
+      dynamicAnimation: {
+        speed: 100,
+      },
+    },
     events: {
       // legend クリックによる series の表示・非表示を、2 つの chart 間で連動させる
       legendClick: (chartContext, seriesIndex) => {
@@ -46,6 +59,24 @@ const commonOptions: ApexOptions = {
             max: Math.min(xaxis.max, now.getTime()),
           },
         };
+      },
+      // 最初のズーム範囲に戻す
+      beforeResetZoom: () => {
+        const now = new Date();
+        return {
+          xaxis: {
+            min: sub(now, initialXRange).getTime(),
+            max: now.getTime(),
+          },
+        };
+      },
+      // 読み込んでいない範囲があれば読み込む
+      zoomed: (_, { xaxis }) => {
+        if (xaxis.min === undefined || xaxis.max === undefined) return; // ズームリセットのとき
+        requestMeasurements(xaxis.min, xaxis.max);
+      },
+      scrolled: (_, { xaxis }) => {
+        requestMeasurements(xaxis.min, xaxis.max);
       },
     },
   },
@@ -90,7 +121,7 @@ const commonOptions: ApexOptions = {
       height: 10,
     },
   },
-};
+});
 
 const getSeries = (
   measurements: readonly Measurement[],
@@ -104,7 +135,20 @@ const getSeries = (
   }));
 
 const Charts: React.FC = () => {
-  const measurements = useMeasurements();
+  const { measurements, requestMeasurements } = useMeasurements();
+
+  useEffect(() => {
+    const now = new Date();
+    requestMeasurements(sub(now, initialXRange).getTime(), now.getTime());
+  }, [requestMeasurements]);
+
+  const commonOptions = useMemo(() => getCommonOptions(requestMeasurements), [
+    requestMeasurements,
+  ]);
+
+  // FIXME: subscription によって新しいデータが追加されると、
+  // 全データが表示される範囲に x 軸のズームがリセットされてしまう
+  // https://github.com/apexcharts/react-apexcharts/issues/148
 
   return (
     <>

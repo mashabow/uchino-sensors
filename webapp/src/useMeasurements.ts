@@ -1,8 +1,7 @@
 import { GraphQLResult } from '@aws-amplify/api-graphql';
 import { AWSIoTProvider, PubSub } from '@aws-amplify/pubsub';
 import Amplify, { API, graphqlOperation } from 'aws-amplify';
-import { sub } from 'date-fns';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 import awsExports from './aws-exports';
 import * as queries from './graphql/queries';
@@ -28,30 +27,37 @@ Amplify.addPluggable(
   })
 );
 
-export const useMeasurements = (): readonly Measurement[] => {
+export const useMeasurements = (): {
+  measurements: readonly Measurement[];
+  requestMeasurements: (from: number, to: number) => Promise<void>;
+} => {
   const [measurements, setMeasurements] = useState<readonly Measurement[]>([]);
+  const timestampMin = useRef(Date.now());
 
-  useEffect(() => {
-    (async () => {
-      const now = new Date();
-      const { data } = (await API.graphql(
-        graphqlOperation(queries.listMeasurements, {
-          type: 'Measurement',
-          timestamp: {
-            between: [sub(now, { days: 1, hours: 1 }).getTime(), now.getTime()],
-          },
-          limit: 500,
-        } as ListMeasurementsQueryVariables)
-      )) as GraphQLResult<ListMeasurementsQuery>;
+  // timestamp の範囲を指定して取得
+  const requestMeasurements = useCallback(async (from: number, to: number) => {
+    if (from >= timestampMin.current) return;
 
-      setMeasurements(
-        (data?.listMeasurements?.items?.filter(
+    const { data } = (await API.graphql(
+      graphqlOperation(queries.listMeasurements, {
+        type: 'Measurement',
+        timestamp: { between: [from, timestampMin.current] },
+        limit: 500,
+      } as ListMeasurementsQueryVariables)
+    )) as GraphQLResult<ListMeasurementsQuery>;
+
+    setMeasurements((ms) =>
+      [
+        ...ms,
+        ...((data?.listMeasurements?.items?.filter(
           Boolean
-        ) as readonly Measurement[]) ?? []
-      );
-    })();
+        ) as readonly Measurement[]) ?? []),
+      ].sort((a, b) => (a.timestamp ?? 0) - (b.timestamp ?? 0))
+    );
+    timestampMin.current = from;
   }, []);
 
+  // リアルタイム更新
   useEffect(() => {
     const subscription = PubSub.subscribe(
       'republished/with-uchino-sensors-fields'
@@ -63,5 +69,5 @@ export const useMeasurements = (): readonly Measurement[] => {
     return () => subscription.unsubscribe();
   }, []);
 
-  return measurements;
+  return { measurements, requestMeasurements };
 };
